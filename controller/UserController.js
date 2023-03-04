@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { body, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const UserModel = require("../model/UserModel");
 const CONSTANTS = require("../Constants");
 
@@ -11,20 +11,21 @@ var bcrypt = require("bcryptjs");
 const JWT_SECRET = process.env.USER_SECRET;
 var jwt = require("jsonwebtoken");
 
+// ! registration --> auth-token not required
 exports.register = async (req, resp) => {
   let success = false;
  
   // if there are errors, return bad request and the error.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return resp.status(400).json({ success, error: errors.array() });
+    return resp.status(CONSTANTS.ERROR.ERROR_CODE).json({ success, error: errors.array() });
   }
 
   // Check whether the email exist already
   try {
     let user = await UserModel.findOne({ email: req.body.email });
     if (user && user.user_flag===true) {
-      return resp.status(400).json({
+      return resp.status(CONSTANTS.ERROR.ERROR_CODE).json({
         success,
         error: CONSTANTS.USER.EMAIL_ALREADY_EXIST,
       });
@@ -57,3 +58,53 @@ exports.register = async (req, resp) => {
     resp.status(CONSTANTS.ERROR.SERVER_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
   }
 };
+
+
+// !login --> auth-token not required
+exports.login =  async (req, resp) => {
+
+  // if there are errors, return bad request and the error.
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return resp.status(CONSTANTS.ERROR.ERROR_CODE).json({ errors: errors.array() });
+  }
+
+  let success=false;
+
+  const { email, password } = req.body;
+  try {
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .json({success, error: CONSTANTS.USER.EMAIL_NOT_FOUND });
+    }
+
+    if (user.user_flag===false) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .json({success, error: CONSTANTS.USER.EMAIL_NOT_FOUND });
+    }
+
+    const passwordCompare = await bcrypt.compare(password, user.password);
+
+    if (!passwordCompare) {
+      return resp
+        .status(CONSTANTS.ERROR.ERROR_CODE)
+        .json({success, error: CONSTANTS.USER.EMAIL_PASSWORD_MISMATCH });
+    }
+
+    const payload = {
+      user: {
+        id: user._id,
+      },
+    };
+
+    const authToken = jwt.sign(payload, JWT_SECRET);
+    success=true;
+    resp.json({success, authToken });
+  } catch (error) {
+    // console.error(error);
+    resp.status(CONSTANTS.ERROR.SERVER_ERROR_CODE).send({success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
+}
