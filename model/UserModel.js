@@ -5,14 +5,12 @@ const user = new Schema({
     name:{
         type:String,
         required:true,
-        unique:true
     },
 profile:{
         type:String,
     },
     mobile:{
         type:Number,
-        required:true
     },
     email:{
         type:String,
@@ -22,6 +20,9 @@ profile:{
     password:{
         type:String,
         required:true
+    },
+    address:{
+        type: String,
     },
     user_flag:{
         type:Boolean,
@@ -34,7 +35,7 @@ profile:{
         type:String
     },
     user_updated_time:{
-        type: String,
+        type: Date,
         default: Date.now,
     },
     date:{

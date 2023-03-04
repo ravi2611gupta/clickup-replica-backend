@@ -1,10 +1,19 @@
+require('dotenv').config();
+const express = require("express");
+const app = express();
+const cors = require('cors');
+
+// connection
 const connectToMongo = require("./config/database");
 connectToMongo();
 
-const express = require("express");
-const app = express();
-const port = 5000
+// middleware
 app.use(express.json());
+app.use(cors());
+
+// constants
+const port = process.env.PORT || 5000;
+
 
 // Available Routes
 app.get("/", (req, resp)=>{
@@ -13,7 +22,6 @@ app.get("/", (req, resp)=>{
 
 // getting routes
 const userRoutes = require("./routes/users");
-
 
 
 app.use("/user", userRoutes);
