@@ -1,8 +1,7 @@
 require("dotenv").config();
-const express = require("express");
 const { validationResult } = require("express-validator");
-const UserModel = require("../model/UserModel");
-const CONSTANTS = require("../Constants");
+const UserModel = require("../../model/UserModel");
+const CONSTANTS = require("../../Constants");
 
 // password protection
 var bcrypt = require("bcryptjs");
@@ -27,7 +26,7 @@ exports.register = async (req, resp) => {
     if (user && user.user_flag===true) {
       return resp.status(CONSTANTS.ERROR.ERROR_CODE).json({
         success,
-        error: CONSTANTS.USER.EMAIL_ALREADY_EXIST,
+        error: CONSTANTS.AUTH.EMAIL_ALREADY_EXIST,
       });
     }
 
@@ -77,13 +76,13 @@ exports.login =  async (req, resp) => {
     if (!user) {
       return resp
         .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
-        .json({success, error: CONSTANTS.USER.EMAIL_NOT_FOUND });
+        .json({success, error: CONSTANTS.AUTH.EMAIL_NOT_FOUND });
     }
 
     if (user.user_flag===false) {
       return resp
         .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
-        .json({success, error: CONSTANTS.USER.EMAIL_NOT_FOUND });
+        .json({success, error: CONSTANTS.AUTH.EMAIL_NOT_FOUND });
     }
 
     const passwordCompare = await bcrypt.compare(password, user.password);
@@ -91,7 +90,7 @@ exports.login =  async (req, resp) => {
     if (!passwordCompare) {
       return resp
         .status(CONSTANTS.ERROR.ERROR_CODE)
-        .json({success, error: CONSTANTS.USER.EMAIL_PASSWORD_MISMATCH });
+        .json({success, error: CONSTANTS.AUTH.EMAIL_PASSWORD_MISMATCH });
     }
 
     const payload = {

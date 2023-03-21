@@ -21,10 +21,18 @@ app.get("/", (req, resp)=>{
 })
 
 // getting routes
-const userRoutes = require("./routes/users");
+// user
+const userRoutes = require("./routes/user/users");
+
+// admin
+const adminRoutes = require("./routes/admin/admin");
+const eventType = require("./routes/admin/eventType");
 
 
 app.use("/user", userRoutes);
+app.use("/admin", adminRoutes);
+app.use("/event-type", eventType);
+
 
 app.listen(port, ()=>{
     console.log(`LMS backend listening at http://localhost:${port}`);
