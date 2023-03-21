@@ -9,11 +9,7 @@ const eventType = new Schema({
     event_type_flag:{
         type: Boolean,
         default: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('eventType', eventType);

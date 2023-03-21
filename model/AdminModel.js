@@ -14,12 +14,7 @@ const admin = new Schema({
     admin_flag:{
         type:Boolean,
         default:true
-    },
-    date:{
-        type:Date,
-        default:Date.now
     }
-    
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('admin', admin);

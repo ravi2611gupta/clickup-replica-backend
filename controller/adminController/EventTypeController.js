@@ -37,7 +37,7 @@ exports.getEventType = async (req, resp) => {
   let success = false;
   try {
     const EventType = await EventTypeModel.find({ event_type_flag: true }).sort(
-      { date: -1 }
+      { createdAt: -1 }
     );
     if (EventType == "") {
       return resp
