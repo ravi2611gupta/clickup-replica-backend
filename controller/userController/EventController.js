@@ -83,7 +83,66 @@ exports.softDelete = async (req, resp) => {
     console.log("Soft delete called!");
   } catch (error) {
     resp
-      .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
-      .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+    .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+    .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
   }
 };
+
+// ! deleteEvent  --> auth-token required
+
+exports.deleteEvent = async (req, resp) => {
+  let success = false;
+  try {
+    const events = await EventModel.findByIdAndDelete(req.params.id);
+    if (!events) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
+    }
+    success = true;
+    resp.send({ success, message: CONSTANTS.SUCCESS.DELETE_SUCCESS_MESSAGE });
+  
+  } catch (error) {
+    resp
+    .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+    .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
+};
+
+
+
+// ! updateEvent --> auth-token required
+exports.updateEvent = async (req, resp) => {
+  let success = false;
+  
+    // if there are errors, return bad request and the error.
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return resp
+        .status(CONSTANTS.ERROR.ERROR_CODE)
+        .json({ success, error: errors.array() });
+    }
+
+    try {
+      const formData = req.body;
+      
+      //  find the event to be updated and update that
+      const event = await EventModel.findById(req.params.id);
+      if (event == null) {
+        return resp.status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE});
+      }
+
+      const updatedEvent = await EventModel.findByIdAndUpdate(
+        req.params.id,
+        { $set: formData },
+        { new: true }
+      );
+      success = true;
+      resp.send({ success, updatedEvent });
+      
+    } catch (error) {
+      resp
+    .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+    .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+    }
+}

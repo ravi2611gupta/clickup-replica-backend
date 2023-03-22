@@ -26,6 +26,24 @@ router.post(
   );
 
   router.get('/:userId', fetchUser, EventController.getAllEvent);
+  router.delete('/:id', fetchUser, EventController.deleteEvent);
 
+  router.put(
+    "/:id",
+    fetchUser,
+    [body("event_name", CONSTANTS.FIELD_VALIDATION.NAME_VALIDATION).isLength({
+      min: 2,
+    })],
+    [body("event_cover_image", CONSTANTS.FIELD_VALIDATION.IMAGE_VALIDATION).isLength({
+      min: 2,
+    })],
+    [body("event_mode", CONSTANTS.FIELD_VALIDATION.EVENT_MODE_VALIDATION).isLength({
+      min: 2,
+    })],
+    [body("event_type", CONSTANTS.FIELD_VALIDATION.EVENT_TYPE_VALIDATION).isLength({
+      min: 2,
+    })],
+    EventController.updateEvent
+  );
 
 module.exports = router;
