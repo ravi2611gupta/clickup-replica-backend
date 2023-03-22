@@ -36,16 +36,16 @@ exports.addEventType = async (req, resp) => {
 exports.getEventType = async (req, resp) => {
   let success = false;
   try {
-    const EventType = await EventTypeModel.find({ event_type_flag: true }).sort(
+    const eventTypes = await EventTypeModel.find({ event_type_flag: true }).sort(
       { createdAt: -1 }
     );
-    if (EventType == "") {
+    if (eventTypes == "") {
       return resp
         .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
         .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
     }
     success = true;
-    resp.send({ success, EventType });
+    resp.send({ success, eventTypes });
   } catch (error) {
     resp
       .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)

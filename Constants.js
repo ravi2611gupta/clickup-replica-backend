@@ -3,8 +3,10 @@ const CONSTANTS = {
         ERROR_CODE: 400,
         SERVER_ERROR_CODE: 500,
         NOT_FOUND_ERROR_CODE: 404,
+        UNAUTHORIZED_ERROR_CODE: 401,
         ERROR_MESSAGE: 'Opps Something went wrong....!',
         NOT_FOUND_ERROR_MESSAGE: 'Sorry data not found!',
+        UNAUTHORIZED_ERROR_MESSAGE: "You are not authorized!",
     },
     SUCCESS: {
         SUCCESS_CODE: 200,
@@ -28,7 +30,12 @@ const CONSTANTS = {
     FIELD_VALIDATION:{
         NAME_VALIDATION: 'Name must be at least 2 characters',
         EMAIL_VALIDATION: 'Email field is empty or not a valid email',
-        PASSWORD_VALIDATION:'Password must be have minimum 8 characters'
+        PASSWORD_VALIDATION:'Password must be have minimum 8 characters',
+        IMAGE_VALIDATION:'Image should not be blank',
+        USER_VALIDATION:'User id should not be blank',
+        // event 
+        EVENT_MODE_VALIDATION:'Mode of event should not be blank',
+        EVENT_TYPE_VALIDATION:'Type of event should not be blank',
     }
 
 }

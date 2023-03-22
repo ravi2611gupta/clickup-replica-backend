@@ -23,6 +23,7 @@ app.get("/", (req, resp)=>{
 // getting routes
 // user
 const userRoutes = require("./routes/user/users");
+const events = require("./routes/user/events")
 
 // admin
 const adminRoutes = require("./routes/admin/admin");
@@ -32,8 +33,9 @@ const eventType = require("./routes/admin/eventType");
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/event-type", eventType);
+app.use("/event", events);
 
 
 app.listen(port, ()=>{
-    console.log(`LMS backend listening at http://localhost:${port}`);
+    console.log(`Click-up replica backend listening at http://localhost:${port}`);
 });
