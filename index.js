@@ -21,19 +21,21 @@ app.get("/", (req, resp)=>{
 })
 
 // getting routes
-// user
-const userRoutes = require("./routes/user/users");
-const events = require("./routes/user/events")
-
 // admin
 const adminRoutes = require("./routes/admin/admin");
 const eventType = require("./routes/admin/eventType");
+
+// user
+const userRoutes = require("./routes/user/users");
+const events = require("./routes/user/events");
+const guests = require("./routes/user/guest");
 
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/event-type", eventType);
 app.use("/event", events);
+app.use("/guest", guests);
 
 
 app.listen(port, ()=>{

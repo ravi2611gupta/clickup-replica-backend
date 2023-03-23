@@ -7,6 +7,7 @@ const CONSTANTS = {
         ERROR_MESSAGE: 'Opps Something went wrong....!',
         NOT_FOUND_ERROR_MESSAGE: 'Sorry data not found!',
         UNAUTHORIZED_ERROR_MESSAGE: "You are not authorized!",
+        USER_EXIST_ERROR_MESSAGE: "User is already exist!",
     },
     SUCCESS: {
         SUCCESS_CODE: 200,
@@ -36,6 +37,8 @@ const CONSTANTS = {
         // event 
         EVENT_MODE_VALIDATION:'Mode of event should not be blank',
         EVENT_TYPE_VALIDATION:'Type of event should not be blank',
+        // guest
+        EVENT_VALIDATION:'event should not be blank',
     }
 
 }

@@ -9,13 +9,9 @@ const CONSTANTS = require("../../Constants");
 
 router.post(
   "/register",
-  [
-    body("name", CONSTANTS.FIELD_VALIDATION.NAME_VALIDATION).isLength({
-      min: 2,
-    }),
-    body("password", CONSTANTS.FIELD_VALIDATION.PASSWORD_VALIDATION).isLength({
-      min: 8,
-    }),
+  [ 
+    body("name", CONSTANTS.FIELD_VALIDATION.NAME_VALIDATION).isLength({ min: 2, }),
+    body("password", CONSTANTS.FIELD_VALIDATION.PASSWORD_VALIDATION).isLength({ min: 8, }),
     body("email", CONSTANTS.FIELD_VALIDATION.EMAIL_VALIDATION).isEmail(),
   ],
   UserController.register
@@ -24,9 +20,7 @@ router.post(
 router.post(
   "/login",
   [
-    body("password", CONSTANTS.FIELD_VALIDATION.PASSWORD_VALIDATION).isLength({
-      min: 8,
-    }),
+    body("password", CONSTANTS.FIELD_VALIDATION.PASSWORD_VALIDATION).isLength({ min: 8, }),
     body("email", CONSTANTS.FIELD_VALIDATION.EMAIL_VALIDATION).isEmail(),
   ],
   UserController.login

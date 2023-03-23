@@ -2,7 +2,6 @@ require("dotenv").config();
 const { validationResult } = require("express-validator");
 const EventModel = require("../../model/EventModel");
 const CONSTANTS = require("../../Constants");
-const mongoose = require('mongoose')
 
 // ! addEvent --> auth-token required
 exports.addEvent = async (req, resp) => {
@@ -11,10 +10,6 @@ exports.addEvent = async (req, resp) => {
   // getting userId
   const userId = req.user.id;
   if (userId == "") {
-    return resp.status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.UNAUTHORIZED_ERROR_MESSAGE });
-  }
-
-  if(userId !== req.params.userId){
     return resp.status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.UNAUTHORIZED_ERROR_MESSAGE });
   }
 
@@ -35,7 +30,7 @@ exports.addEvent = async (req, resp) => {
 
     const savedEvent = await event.save();
     success = true;
-    resp.send({ success, savedEvent });
+    resp.send({ success,  event: savedEvent });
   } catch (error) {
     resp
       .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
@@ -51,10 +46,6 @@ exports.getAllEvent = async (req, resp) => {
   // getting userId
   const userId = req.user.id;
   if (userId == "") {
-    return resp.status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.UNAUTHORIZED_ERROR_MESSAGE });
-  }
-
-  if(userId !== req.params.userId){
     return resp.status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE).send({ success, error: CONSTANTS.ERROR.UNAUTHORIZED_ERROR_MESSAGE });
   }
 
@@ -138,7 +129,7 @@ exports.updateEvent = async (req, resp) => {
         { new: true }
       );
       success = true;
-      resp.send({ success, updatedEvent });
+      resp.send({ success, event: updatedEvent });
       
     } catch (error) {
       resp
