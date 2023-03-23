@@ -29,6 +29,7 @@ const eventType = require("./routes/admin/eventType");
 const userRoutes = require("./routes/user/users");
 const events = require("./routes/user/events");
 const guests = require("./routes/user/guest");
+const tags = require("./routes/user/tag");
 
 
 app.use("/user", userRoutes);
@@ -36,6 +37,7 @@ app.use("/admin", adminRoutes);
 app.use("/event-type", eventType);
 app.use("/event", events);
 app.use("/guest", guests);
+app.use("/tag", tags);
 
 
 app.listen(port, ()=>{

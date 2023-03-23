@@ -38,7 +38,9 @@ const CONSTANTS = {
         EVENT_MODE_VALIDATION:'Mode of event should not be blank',
         EVENT_TYPE_VALIDATION:'Type of event should not be blank',
         // guest
-        EVENT_VALIDATION:'event should not be blank',
+        EVENT_VALIDATION:'Event should not be blank',
+        // tag
+        COLOR_VALIDATION:'Color should not be blank',
     }
 
 }

@@ -24,13 +24,16 @@ exports.addGuest = async (req, resp) => {
   }
 
   try {
-
-    const checkUserExistence = await GuestModel.find({$and: [{ user: userId }, {event: req.body.event }] });
-    if(checkUserExistence.length !== 0){
-        return resp.status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE).send({ success, message: CONSTANTS.ERROR.USER_EXIST_ERROR_MESSAGE })
+    const checkUserExistence = await GuestModel.find({
+      $and: [{ user: userId }, { event: req.body.event }],
+    });
+    if (checkUserExistence.length !== 0) {
+      return resp
+        .status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE)
+        .send({ success, message: CONSTANTS.ERROR.USER_EXIST_ERROR_MESSAGE });
     }
 
-    const formData = {...req.body, user: userId};
+    const formData = { ...req.body, user: userId };
     const guest = new GuestModel(formData);
     const savedGuest = await guest.save();
 
@@ -48,9 +51,14 @@ exports.listOfGuest = async (req, resp) => {
   let success = false;
 
   try {
-    const GuestListOfEvent = await GuestModel.find({event: req.params.eventId}).populate('user', '-password').populate('event').sort({ createdAt: -1 });
-    if(GuestListOfEvent == ""){
-        return resp
+    const GuestListOfEvent = await GuestModel.find({
+      event: req.params.eventId,
+    })
+      .populate("user", "-password")
+      .populate("event")
+      .sort({ createdAt: -1 });
+    if (GuestListOfEvent == "") {
+      return resp
         .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
         .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
     }
@@ -64,16 +72,62 @@ exports.listOfGuest = async (req, resp) => {
   }
 };
 
-
 // ! updateGuest --> auth-token required
 exports.updateGuest = async (req, resp) => {
-    let success = false;
-    
-    try {
-        
-    } catch (error) {
-        resp
+  let success = false;
+
+  try {
+    const guest = await GuestModel.findById(req.params.guestId);
+    if (!guest) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
+    }
+
+    let approved;
+    if (guest.approved === false) {
+      approved = true;
+    } else {
+      approved = false;
+    }
+
+    const updatedGuest = await GuestModel.findByIdAndUpdate(
+      req.params.guestId,
+      { $set: {approved: approved} },
+      { new: true }
+    );
+
+    success = true;
+    resp.send({ success, guest: updatedGuest });
+
+  } catch (error) {
+    resp
       .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
       .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
+};
+
+
+// ! deleteGuest --> auth-token required
+exports.deleteGuest = async (req, resp) => {
+    let success = false;
+  try {
+    const guest = await GuestModel.findByIdAndDelete(req.params.guestId);
+    if (!guest) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
     }
+    success = true;
+    resp.send({ success, message: CONSTANTS.SUCCESS.DELETE_SUCCESS_MESSAGE });
+  
+  } catch (error) {
+    resp
+    .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+    .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
 }
+
+
+
+
