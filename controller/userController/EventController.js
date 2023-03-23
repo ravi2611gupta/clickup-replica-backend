@@ -59,8 +59,7 @@ exports.getAllEvent = async (req, resp) => {
   }
 
   try {
-    // const Event = await EventModel.find().sort({ createdAt: -1 });
-    const events = await EventModel.find({ 'event_host': userId }).populate('event_host').sort({ createdAt: -1 });
+    const events = await EventModel.find({ 'event_host': userId }).populate('event_host', '-password').sort({ createdAt: -1 });
     if (events == "") {
       return resp
         .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
@@ -80,6 +79,7 @@ exports.getAllEvent = async (req, resp) => {
 exports.softDelete = async (req, resp) => {
   let success = false;
   try {
+    // TODO ---->
     console.log("Soft delete called!");
   } catch (error) {
     resp
@@ -88,8 +88,8 @@ exports.softDelete = async (req, resp) => {
   }
 };
 
-// ! deleteEvent  --> auth-token required
 
+// ! deleteEvent  --> auth-token required
 exports.deleteEvent = async (req, resp) => {
   let success = false;
   try {
@@ -146,3 +146,23 @@ exports.updateEvent = async (req, resp) => {
     .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
     }
 }
+
+
+// ! getSingleEvent --> auth-token required
+exports.getSingleEvent = async (req, resp) => {
+  let success = false;
+  try {
+    const event = await EventModel.findById(req.params.id).populate('event_host', '-password');
+    if (event == null) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
+    }
+    success = true;
+    resp.send({ success, event });
+  } catch (error) {
+    resp
+      .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+      .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
+};

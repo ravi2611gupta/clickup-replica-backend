@@ -26,6 +26,7 @@ router.post(
   );
 
   router.get('/:userId', fetchUser, EventController.getAllEvent);
+  router.get('/single-event/:id', fetchUser, EventController.getSingleEvent);
   router.delete('/:id', fetchUser, EventController.deleteEvent);
 
   router.put(
