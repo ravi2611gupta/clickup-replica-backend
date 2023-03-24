@@ -104,6 +104,30 @@ exports.listOfGuest = async (req, resp) => {
   }
 };
 
+
+// ! getSingleGuest --> auth-token required
+exports.getSingleGuest = async (req, resp) => {
+  let success = false;
+
+  try {
+    const guest = await GuestModel.findById(req.params.guestId)
+      .populate("user", "-password")
+      .populate("event");
+    if (!guest) {
+      return resp
+        .status(CONSTANTS.ERROR.NOT_FOUND_ERROR_CODE)
+        .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
+    }
+
+    success = true;
+    resp.send({ success, guest: guest });
+  } catch (error) {
+    resp
+      .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
+      .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
+  }
+};
+
 // ! updateGuest --> auth-token required
 exports.updateGuest = async (req, resp) => {
   let success = false;

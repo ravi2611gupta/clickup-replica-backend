@@ -13,6 +13,7 @@ router.post('/', fetchUser, [
 
 router.get('/:eventId', fetchUser, GuestController.listOfGuest);
 router.put('/:guestId', fetchUser, GuestController.updateGuest);
+router.get('/:guestId', fetchUser, GuestController.getSingleGuest);
 router.delete('/:guestId', fetchUser, GuestController.deleteGuest);
 
 module.exports = router;
