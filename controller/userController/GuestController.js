@@ -29,13 +29,10 @@ exports.addGuest = async (req, resp) => {
       $and: [{ user: userId }, { event: req.body.event }],
     });
     
-    const checkAudienceExistence = await AudienceModel.find({user: userId});
-
     // const checkAudienceExistence = await AudienceModel.find({
     //   $and: [{ user: userId }, { event: { $in: [req.body.event] } }],
     // });
-
-
+    
     if (checkUserExistence.length !== 0) {
       return resp
         .status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE)
@@ -46,24 +43,27 @@ exports.addGuest = async (req, resp) => {
     // adding data in guest
     const formData = { ...req.body, user: userId };
     const guest = new GuestModel(formData);
-    const savedGuest = await guest.save();
+    const savedGuest = await (await guest.save()).populate('event');
     
+    const host = savedGuest.event.event_host.toString();
+
+    const checkAudienceExistence = await AudienceModel.find( {$and: [{user: userId}, {host: host}]});
     let savedAudience = {};
-    const { event } = req.body;
 
     if(checkAudienceExistence.length === 0){
         // add
-        const newFormDataForAdd = {user: userId, events: [event]};    
+        const newFormDataForAdd = {host: host, user: userId, guests: [savedGuest._id]};    
         const audience = new AudienceModel(newFormDataForAdd);
-        savedAudience = await audience.save(event);
+        savedAudience = await audience.save(audience);
     }else{
         // update
-        const newEvents = checkAudienceExistence[0]['events'].map((objId) => {
+        const oldGuests = checkAudienceExistence[0]['guests'].map((objId) => {
             return objId.toString();
         })
+
         savedAudience = await AudienceModel.findByIdAndUpdate(
-            checkAudienceExistence[0]['_id'].toString(),
-            { $set: {events: [...newEvents, event]} },
+            checkAudienceExistence[0]['_id'],
+            { $set: {guests: [...oldGuests, (savedGuest._id).toString()]} },
             { new: true }
           );
     }
@@ -71,7 +71,7 @@ exports.addGuest = async (req, resp) => {
     success = true;
     resp.send({ success, guest: savedGuest, audience: savedAudience  });
   } catch (error) {
-    console.log("Error", error);
+    // console.log("Error", error);
     resp
       .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
       .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
@@ -117,14 +117,10 @@ exports.updateGuest = async (req, resp) => {
     }
 
     const { approval } = req.body;
-    const newFormData = {};
-    if(approval){
-        newFormData.approval = approval
-    }
-
+    
     const updatedGuest = await GuestModel.findByIdAndUpdate(
       req.params.guestId,
-      { $set: {newFormData} },
+      { $set: {approval: approval} },
       { new: true }
     );
 

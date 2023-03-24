@@ -56,6 +56,7 @@ const event = new Schema({
         required: function() { return this.event_type === 'single'; } 
     },
 
+    //  todo: fix this
     series_event_start_date: [{
         event_date: { type: String, required: function() { return this.event_type === 'series'; }  },
         event_time: { type: String, required: function() { return this.event_type === 'series'; }  }
