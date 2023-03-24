@@ -21,6 +21,9 @@ app.get("/", (req, resp)=>{
 })
 
 // getting routes
+// testing
+const mail = require("./routes/user/mail");
+
 // admin
 const adminRoutes = require("./routes/admin/admin");
 const eventType = require("./routes/admin/eventType");
@@ -33,6 +36,7 @@ const tags = require("./routes/user/tag");
 const audience = require("./routes/user/audience");
 
 
+app.use("/mail", mail);
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/event-type", eventType);
