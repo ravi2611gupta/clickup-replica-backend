@@ -1,22 +1,22 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const guest = new Schema({
+const audience = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true,
     },
-    event: {
+    events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'event',
         required: true
-    },
-    approval: {
-        type: String,
-        default: 'pending',
-        enum: ['approved', 'pending', 'rejected']
-    }
+    }],
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tag'
+    }]
+    
 }, {timestamps: true});
 
-module.exports = mongoose.model('guest', guest);
+module.exports = mongoose.model('audience', audience);

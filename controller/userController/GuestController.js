@@ -2,6 +2,7 @@ require("dotenv").config();
 const { validationResult } = require("express-validator");
 const GuestModel = require("../../model/GuestModel");
 const CONSTANTS = require("../../Constants");
+const AudienceModel = require("../../model/AudienceModel");
 
 // ! addGuest --> auth-token required
 exports.addGuest = async (req, resp) => {
@@ -27,19 +28,50 @@ exports.addGuest = async (req, resp) => {
     const checkUserExistence = await GuestModel.find({
       $and: [{ user: userId }, { event: req.body.event }],
     });
+    
+    const checkAudienceExistence = await AudienceModel.find({user: userId});
+
+    // const checkAudienceExistence = await AudienceModel.find({
+    //   $and: [{ user: userId }, { event: { $in: [req.body.event] } }],
+    // });
+
+
     if (checkUserExistence.length !== 0) {
       return resp
         .status(CONSTANTS.ERROR.UNAUTHORIZED_ERROR_CODE)
         .send({ success, message: CONSTANTS.ERROR.USER_EXIST_ERROR_MESSAGE });
     }
 
+    
+    // adding data in guest
     const formData = { ...req.body, user: userId };
     const guest = new GuestModel(formData);
     const savedGuest = await guest.save();
+    
+    let savedAudience = {};
+    const { event } = req.body;
+
+    if(checkAudienceExistence.length === 0){
+        // add
+        const newFormDataForAdd = {user: userId, events: [event]};    
+        const audience = new AudienceModel(newFormDataForAdd);
+        savedAudience = await audience.save(event);
+    }else{
+        // update
+        const newEvents = checkAudienceExistence[0]['events'].map((objId) => {
+            return objId.toString();
+        })
+        savedAudience = await AudienceModel.findByIdAndUpdate(
+            checkAudienceExistence[0]['_id'].toString(),
+            { $set: {events: [...newEvents, event]} },
+            { new: true }
+          );
+    }
 
     success = true;
-    resp.send({ success, guest: savedGuest });
+    resp.send({ success, guest: savedGuest, audience: savedAudience  });
   } catch (error) {
+    console.log("Error", error);
     resp
       .status(CONSTANTS.ERROR.SERVER_ERROR_CODE)
       .send({ success, error: CONSTANTS.ERROR.ERROR_MESSAGE });
@@ -84,16 +116,15 @@ exports.updateGuest = async (req, resp) => {
         .send({ success, error: CONSTANTS.ERROR.NOT_FOUND_ERROR_MESSAGE });
     }
 
-    let approved;
-    if (guest.approved === false) {
-      approved = true;
-    } else {
-      approved = false;
+    const { approval } = req.body;
+    const newFormData = {};
+    if(approval){
+        newFormData.approval = approval
     }
 
     const updatedGuest = await GuestModel.findByIdAndUpdate(
       req.params.guestId,
-      { $set: {approved: approved} },
+      { $set: {newFormData} },
       { new: true }
     );
 
